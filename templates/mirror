@@ -1,0 +1,6 @@
+server {
+    listen 127.0.0.1:${PKG_PORT};
+    location / {
+        proxy_pass ${MIRROR_URL}$request_uri;
+    }
+}

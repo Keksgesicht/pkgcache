@@ -1,0 +1,40 @@
+user    root;
+daemon  off;
+worker_processes 2;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format combined2 '[$time_local] $host $upstream_addr $remote_addr | '
+                         '$proxy_protocol_addr $remote_user | '
+                         '"$request" $status $body_bytes_sent '
+                         '"$http_referer" "$http_user_agent"';
+
+    include       mime.types;
+    default_type  application/octet-stream;
+    access_log    /dev/stdout combined2;
+    error_log     /dev/stderr;
+    sendfile      on;
+
+    client_max_body_size  1000M;
+    keepalive_timeout     64;
+    types_hash_max_size   4096;
+
+    server_names_hash_bucket_size 128;
+
+    resolver ${DNS_SERVER};
+
+    server {
+        listen       80;
+        server_name  _;
+        root         /cache;
+        autoindex    on;
+        autoindex_exact_size on;
+
+		include /etc/nginx/conf.d/main.conf;
+    }
+
+	include /etc/nginx/conf.d/pkg/*.conf;
+}

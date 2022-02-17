@@ -1,0 +1,28 @@
+server {
+    listen      127.0.0.1:${PKG_PORT};
+    root        /cache/${PKG_NAME};
+    autoindex   on;
+    autoindex_exact_size on;
+
+    location / {
+        proxy_pass http://mirror_${PKG_NAME}$request_uri;
+    }
+
+    location ${FILE_EXCLUDE} {
+        proxy_pass http://mirror_${PKG_NAME}$request_uri;
+    }
+
+    location ${FILE_INCLUDE} {
+        try_files $uri @pkg_mirror;
+    }
+
+    # Retrieve package from upstream mirrors and cache for future requests
+    location @pkg_mirror {
+        proxy_pass  http://mirror_${PKG_NAME}$request_uri;
+        proxy_store /cache/${PKG_NAME}$request_uri;
+    }
+}
+
+upstream mirror_${PKG_NAME} {
+PLACE_UPSTREAM_INTERNAL_HERE}
+
