@@ -3,7 +3,10 @@
 PKG_CONF_DIR="/config"
 TEMPLATE_DIR="/etc/nginx/templates"
 export PKG_PORT=8000
+
 mkdir -p /etc/nginx/conf.d/pkg
+[ -f /etc/nginx/conf.d/main.conf ] && \
+	rm /etc/nginx/conf.d/main.conf
 
 envsubst '\$DNS_SERVER' < $TEMPLATE_DIR/nginx > /etc/nginx/nginx.conf
 
